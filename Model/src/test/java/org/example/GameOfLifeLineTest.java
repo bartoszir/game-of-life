@@ -249,11 +249,17 @@ class GameOfLifeLineTest {
         assertFalse(gameOfLifeLine.equals(null));
         assertFalse(gameOfLifeLine.equals(liveCell));
 
+        assertTrue(gameOfLifeLine.equals(gameOfLifeLineSecond));
+
+        assertEquals(gameOfLifeLine.hashCode(), gameOfLifeLineSecond.hashCode());
+
         GameOfLifeCell newLiveCell = new GameOfLifeCell();
         newLiveCell.updateState(true);
         gameOfLifeLineSecond.setCell(1, newLiveCell);
 
         assertFalse(gameOfLifeLine.equals(gameOfLifeLineSecond));
+
+        assertNotEquals(gameOfLifeLine.hashCode(), gameOfLifeLineSecond.hashCode());
     }
 
     @Test

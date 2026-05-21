@@ -180,25 +180,48 @@ class GameOfLifeBoardTest {
         });
         assertEquals("Number of column is out of array.", exception4.getMessage());
     }
-/*
+
     @Test
-    public void testCountAliveNeighbors() {
+    public void testToString() {
+        int testRows = 2;
+        int testCols = 2;
+        GameOfLifeBoard testBoard1 = new GameOfLifeBoard(testRows, testCols, 1, testGameSimulator);
 
-        int testNumRows = testGame.getNumRows();
-        int testNumCols = testGame.getNumCols();
+        for (int i = 0; i < testCols; i++) {
+            for (int j = 0; j < testRows; j++) {
+                testBoard1.set(i, j, true);
+            }
+        }
 
-        testBoard[5][5].updateState(true); //this the cell that we are going to check after doStep()
-        testBoard[4][5].updateState(true);
-        testBoard[4][6].updateState(true);
-        testBoard[5][6].updateState(true);
-        testBoard[6][6].updateState(true);
+        String expectedString = "[numRows=2,numCols=2,board={{true,true},{true,true}}]";
+        assertEquals(expectedString, testBoard1.toString());
+    }
 
-        testGame.setGameBoard(testBoard);
+    @Test
+    public void testEquals() {
 
-        testGame.setCellsNeighbours();
+        int testRows = 3;
+        int testCols = 3;
+        GameOfLifeBoard testBoard1 = new GameOfLifeBoard(testRows, testCols, 1, testGameSimulator);
+        GameOfLifeBoard testBoard2 = new GameOfLifeBoard(testCols, testCols, 1, testGameSimulator);
 
-        int count = testGame.getCell(5, 5).countAliveNeighbours();
+        assertFalse(testBoard1.equals(null));
+        assertFalse(testBoard1.equals(new GameOfLifeCell()));
 
-        assertEquals(4, count, "the cell at [5,5] should have 4 neighbours");
-    }*/
+        assertTrue(testBoard1.equals(testBoard1));
+
+        for (int i = 0; i < testCols; i++) {
+            for (int j = 0; j < testRows; j++) {
+                testBoard1.set(i, j, true);
+                testBoard2.set(i, j, testBoard1.get(i, j));
+            }
+        }
+
+        assertTrue(testBoard1.equals(testBoard2));
+        assertEquals(testBoard1.hashCode(), testBoard2.hashCode());
+
+        testBoard2.set(1, 1, false);
+        assertFalse(testBoard1.equals(testBoard2));
+        assertNotEquals(testBoard1.hashCode(), testBoard2.hashCode());
+    }
 }

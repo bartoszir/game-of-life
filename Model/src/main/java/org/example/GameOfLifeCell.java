@@ -7,11 +7,13 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class GameOfLifeCell {
+
+public class GameOfLifeCell implements Serializable {
     private boolean value;
     // private GameOfLifeCell[] neighbours;
     private List<GameOfLifeCell> neighbours;

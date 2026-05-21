@@ -1,10 +1,16 @@
 package org.example;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GameOfLifeBoard {
+public class GameOfLifeBoard implements Serializable {
 
     private final GameOfLifeCell[][] board; // = new boolean[height][width];
     private GameOfLifeSimulator gameSimulator;
@@ -169,5 +175,54 @@ public class GameOfLifeBoard {
             columnCells.get(i).updateState(get(i, col));
         }
         return new GameOfLifeColumn(columnCells);
+    }
+
+    // --------------------------------------------------------------------------------------------------------------
+    // metody z cwiczenia 6
+
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE)
+                .append("numRows", numRows)
+                .append("numCols", numCols)
+                .append("board", getBoardCellsValue())
+                .toString();
+    }
+
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        GameOfLifeBoard other = (GameOfLifeBoard) obj;
+        return new EqualsBuilder()
+                .append(numRows, other.numRows)
+                .append(numCols, other.numCols)
+                .append(getBoardCellsValue(), other.getBoardCellsValue())
+                .isEquals();
+    }
+
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(numRows)
+                .append(numCols)
+                .append(getBoardCellsValue())
+                .toHashCode();
+    }
+
+    private boolean[][] getBoardCellsValue() {
+        boolean[][] cellsValue = new boolean[numRows][numCols];
+        for (int r = 0; r < numRows; r++) {
+            for (int c = 0; c < numCols; c++) {
+                cellsValue[r][c] = get(r, c);
+            }
+        }
+
+        return cellsValue;
     }
 }

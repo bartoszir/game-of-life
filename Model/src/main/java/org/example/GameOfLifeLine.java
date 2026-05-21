@@ -7,10 +7,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GameOfLifeLine implements PropertyChangeListener {
+public abstract class GameOfLifeLine implements PropertyChangeListener, Serializable {
     protected List<GameOfLifeCell> cellsList;
     public int liveCount;
     public int deadCount;

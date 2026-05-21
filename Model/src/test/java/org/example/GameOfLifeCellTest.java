@@ -173,9 +173,13 @@ class GameOfLifeCellTest {
         assertTrue(cell.equals(cellSecond));
         assertTrue(cellSecond.equals(cell));
 
+        assertEquals(cell.hashCode(), cellSecond.hashCode());
+
         testNeighbours[1].updateState(true);
         cellSecond.setNeighbour(2, testNeighbours[1]);
         assertFalse(cell.equals(cellSecond));
+
+        assertNotEquals(cell.hashCode(), cellSecond.hashCode());
     }
 
     @Test

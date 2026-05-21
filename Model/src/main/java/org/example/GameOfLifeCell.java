@@ -10,10 +10,11 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
-public class GameOfLifeCell implements Serializable {
+public class GameOfLifeCell implements Serializable, Cloneable, Comparable<GameOfLifeCell> {
     private boolean value;
     // private GameOfLifeCell[] neighbours;
     private List<GameOfLifeCell> neighbours;
@@ -166,5 +167,35 @@ public class GameOfLifeCell implements Serializable {
             gameOfLifeArray.add(gameOfLifeCell.getCellValue());
         }
         return gameOfLifeArray;
+    }
+
+    @Override
+    public GameOfLifeCell clone() throws CloneNotSupportedException {
+        GameOfLifeCell clone = new GameOfLifeCell();
+        clone.value = this.value; // Shallow Copy dla danych prostych
+        clone.neighbours = new ArrayList<>(this.neighbours); // Deep Copy dla kolekcji
+        return clone;
+    }
+
+    @Override
+    public int compareTo(GameOfLifeCell other) throws NullPointerException {
+        if (other == null) {
+            throw new NullPointerException("Cannot compare to null");
+        }
+
+        int valueComparison = Boolean.compare(this.value, other.value);
+        if (valueComparison != 0) {
+            return valueComparison;
+        }
+
+        int neighboursComparison = 0;
+        for (int i = 0; i < neighbours.size(); i++) {
+            neighboursComparison = Boolean.compare(this.neighbours.get(i).getCellValue(),
+                    other.neighbours.get(i).getCellValue());
+            if (neighboursComparison != 0) {
+                return neighboursComparison;
+            }
+        }
+        return neighboursComparison;
     }
 }

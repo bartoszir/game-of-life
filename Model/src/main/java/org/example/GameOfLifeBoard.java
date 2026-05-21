@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GameOfLifeBoard implements Serializable {
+public class GameOfLifeBoard implements Serializable, Cloneable {
 
-    private final GameOfLifeCell[][] board; // = new boolean[height][width];
+    private GameOfLifeCell[][] board; // = new boolean[height][width];
     private GameOfLifeSimulator gameSimulator;
     private int numRows; //later it should be up to the user how many Rows and Columns there will be
     private int numCols;
@@ -44,7 +44,7 @@ public class GameOfLifeBoard implements Serializable {
         }
         this.gameSimulator = gameSimulator;
 
-        board = new GameOfLifeCell[this.numRows][this.numCols];
+        this.board = new GameOfLifeCell[this.numRows][this.numCols];
         for (int r = 0; r < this.numRows; r++) {
             for (int c = 0; c < this.numCols; c++) {
                 board[r][c] = new GameOfLifeCell();
@@ -224,5 +224,19 @@ public class GameOfLifeBoard implements Serializable {
         }
 
         return cellsValue;
+    }
+
+    @Override
+    public GameOfLifeBoard clone() throws CloneNotSupportedException {
+        GameOfLifeBoard clone = (GameOfLifeBoard) super.clone();
+
+        clone.board = new GameOfLifeCell[numRows][numCols];
+        for (int r = 0; r < numRows; r++) {
+            for (int c = 0; c < numCols; c++) {
+                clone.board[r][c] = this.board[r][c].clone();
+            }
+        }
+
+        return clone;
     }
 }

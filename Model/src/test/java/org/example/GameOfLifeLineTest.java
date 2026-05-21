@@ -266,4 +266,19 @@ class GameOfLifeLineTest {
     public void hashCodeTest() {
         assertEquals(gameOfLifeLine.hashCode(), gameOfLifeLineSecond.hashCode());
     }
+
+    @Test
+    public void cloneTest() {
+        try {
+            GameOfLifeLine clone = gameOfLifeLine.clone();
+            assertNotSame(gameOfLifeLine, clone);
+            assertEquals(gameOfLifeLine.cellsList, clone.cellsList);
+
+            PropertyChangeEvent event = new PropertyChangeEvent(liveCell, "cellValue", true, false);
+            clone.propertyChange(event);
+            assertEquals(gameOfLifeLine.cellsList, clone.cellsList); // bo komorki w cellsList wskazuja na te same obiekty
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -194,4 +194,51 @@ class GameOfLifeCellTest {
         assertEquals(cell.hashCode(), cellSecond.hashCode());
     }
 
+    @Test
+    public void cloneTest() {
+        try {
+            GameOfLifeCell cell = new GameOfLifeCell();
+            GameOfLifeCell clone = cell.clone();
+            assertNotSame(cell, clone);
+            assertEquals(cell.getCellValue(), clone.getCellValue());
+
+            clone.setCellValue(true);
+            assertNotSame(cell.getCellValue(), clone.getCellValue());
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void compareToTest() {
+        for (int i = 0; i < testNeighbours.length; i++) {
+            cell.setNeighbour(i, testNeighbours[i]);
+            cellSecond.setNeighbour(i, testNeighbours[i]);
+        }
+
+        cell.setCellValue(false);
+        cellSecond.setCellValue(true);
+        assertEquals(-1, cell.compareTo(cellSecond));
+
+        cell.setCellValue(true);
+        cellSecond.setCellValue(false);
+        assertEquals(1, cell.compareTo(cellSecond));
+
+        cell.setCellValue(true);
+        cellSecond.setCellValue(true);
+        assertEquals(0, cell.compareTo(cellSecond));
+
+        GameOfLifeCell testNeighbour = new GameOfLifeCell();
+        testNeighbour.setCellValue(true);
+        cellSecond.setNeighbour(0, testNeighbour);
+        assertNotEquals(0, cell.compareTo(cellSecond));
+        assertEquals(-1, cell.compareTo(cellSecond));
+    }
+
+    @Test
+    public void compareToNullExceptionTest() {
+        Exception exception = assertThrows(NullPointerException.class, () -> cell.compareTo(null));
+        assertEquals("Cannot compare to null", exception.getMessage());
+    }
+
 }

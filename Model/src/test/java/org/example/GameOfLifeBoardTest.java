@@ -224,4 +224,20 @@ class GameOfLifeBoardTest {
         assertFalse(testBoard1.equals(testBoard2));
         assertNotEquals(testBoard1.hashCode(), testBoard2.hashCode());
     }
+
+    @Test
+    public void cloneTest() {
+        // testGame
+        try {
+            GameOfLifeBoard clone = testGame.clone();
+            assertNotSame(testGame, clone);
+            assertEquals(testGame, clone);
+            assertEquals(testGame.get(4, 4), clone.get(4, 4));
+
+            clone.set(4, 4, !clone.get(4, 4));
+            assertNotEquals(testGame.get(4, 4), clone.get(4, 4));
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

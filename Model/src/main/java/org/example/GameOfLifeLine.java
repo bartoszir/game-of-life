@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GameOfLifeLine implements PropertyChangeListener, Serializable {
+public abstract class GameOfLifeLine implements PropertyChangeListener, Serializable, Cloneable {
     protected List<GameOfLifeCell> cellsList;
     public int liveCount;
     public int deadCount;
@@ -143,5 +143,13 @@ public abstract class GameOfLifeLine implements PropertyChangeListener, Serializ
             gameOfLifeArray.add(gameOfLifeCell.getCellValue());
         }
         return gameOfLifeArray;
+    }
+
+    // czy tu potrzebujemy glebokiej kopii dla kazdej komorki w cellsList?
+    @Override
+    public GameOfLifeLine clone() throws CloneNotSupportedException {
+        GameOfLifeLine clone = (GameOfLifeLine) super.clone();
+        clone.cellsList = new ArrayList<>(cellsList);
+        return clone;
     }
 }

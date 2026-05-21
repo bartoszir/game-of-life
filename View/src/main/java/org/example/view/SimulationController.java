@@ -8,21 +8,20 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.FileGameOfLifeBoardDao;
 import org.example.GameOfLifeBoard;
 import org.example.GameOfLifeCell;
+import org.example.JdbcGameOfLifeBoardDao;
 import org.example.exceptions.FileOperationException;
-import org.example.exceptions.IndexOutOfArrayException;
 import org.example.exceptions.MethodNotFoundException;
 
-import java.io.File;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class SimulationController {
@@ -51,6 +50,10 @@ public class SimulationController {
     private GameOfLifeBoard gameBoard;
     private int iterationCount = 0;
     private ResourceBundle resources;
+
+    private static final String URL = "jdbc:postgresql://localhost:5432/game_of_life";
+    private static final String USER = "nbd";
+    private static final String PASSWORD = "nbdpassword";
 
     // -------------------------------------------------------
 
@@ -87,20 +90,36 @@ public class SimulationController {
 
     @FXML
     private void saveButtonClicked(ActionEvent event) throws FileOperationException {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save_Game_Of_Life_Board");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game of Life Files", ".gol"));
+//        FileChooser fileChooser = new FileChooser();
+//        fileChooser.setTitle("Save_Game_Of_Life_Board");
+//        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game of Life Files", ".gol"));
+//
+//        File file = fileChooser.showSaveDialog(boardGrid.getScene().getWindow());
+//        if (file != null) {
+//            try (FileGameOfLifeBoardDao dao = new FileGameOfLifeBoardDao(file.getAbsolutePath())) {
+//                dao.write(gameBoard);
+//            } catch (Exception e) {
+//                var exception = new FileOperationException("file.not-able-to-write", e);
+//                exception.log(logger);
+//                throw exception;
+//            }
+//        }
 
-        File file = fileChooser.showSaveDialog(boardGrid.getScene().getWindow());
-        if (file != null) {
-            try (FileGameOfLifeBoardDao dao = new FileGameOfLifeBoardDao(file.getAbsolutePath())) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Save Game Of Life Board");
+        dialog.setHeaderText("Enter a name for the board:");
+        dialog.setContentText("Board name:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(boardName -> {
+            try (JdbcGameOfLifeBoardDao dao = new JdbcGameOfLifeBoardDao(boardName)) {
                 dao.write(gameBoard);
             } catch (Exception e) {
                 var exception = new FileOperationException("file.not-able-to-write", e);
                 exception.log(logger);
-                throw exception;
+                throw new RuntimeException(exception);
             }
-        }
+        });
     }
 
     // -------------------------------------------------------
@@ -174,28 +193,6 @@ public class SimulationController {
         renderBoard();
     }
 
-//    private TextField createEditableCell(int row, int col) {
-//        TextField textField = new TextField();
-//
-//        try {
-//            JavaBeanBooleanProperty property = JavaBeanBooleanPropertyBuilder.create()
-//                    .bean(gameBoard.getCell(row, col))
-//                    .name("cellValue")
-//                    .build();
-//            textField.textProperty().bindBidirectional(property, new BooleanStringConverter());
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // walidacja z TextFormatter
-//        TextFormatter<String> formatter = new TextFormatter<>(
-//                change -> change.getControlNewText().matches("[01]?") ? change : null
-//        );
-//        textField.setTextFormatter(formatter);
-//
-//        return textField;
-//    }
-
     private void cleanBoard() {
         iterationCount = 0;
         updateIterationLabel();
@@ -217,4 +214,6 @@ public class SimulationController {
         String iterationText = resources.getString("iterationCountLabel");
         iterationCountLabel.setText(iterationText + " " + iterationCount);
     }
+
+
 }

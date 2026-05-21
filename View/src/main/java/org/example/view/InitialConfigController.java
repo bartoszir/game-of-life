@@ -5,17 +5,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.example.FileGameOfLifeBoardDao;
 import org.example.GameOfLifeBoard;
+import org.example.JdbcGameOfLifeBoardDao;
 import org.example.PlainGameOfLifeSimulator;
 import org.example.exceptions.BadFieldValueException;
 import org.example.exceptions.FileOperationException;
 
-import java.io.File;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.sql.*;
+import java.util.*;
 
 public class InitialConfigController {
     @FXML
@@ -58,6 +56,10 @@ public class InitialConfigController {
     private SimulationController simulationController;
     private ResourceBundle resources;
 
+    private static final String URL = "jdbc:postgresql://localhost:5432/game_of_life";
+    private static final String USER = "nbd";
+    private static final String PASSWORD = "nbdpassword";
+
     // -------------------------------------------------------
 
     @FXML
@@ -72,8 +74,7 @@ public class InitialConfigController {
                 throw new BadFieldValueException("view.dimension-wrong-field-value", new IllegalArgumentException());
             }
 
-            GameOfLifeBoard gameOfLifeBoard = new GameOfLifeBoard(width, height,
-                    (int) (density.getDensity() * (width * height)), new PlainGameOfLifeSimulator());
+            GameOfLifeBoard gameOfLifeBoard = new GameOfLifeBoard(width, height, new PlainGameOfLifeSimulator());
             density.applyDensity(gameOfLifeBoard);
 
             FXMLLoader loader = new FXMLLoader(InitialConfigController.class.getResource("SimulationScene.fxml"));
@@ -95,27 +96,50 @@ public class InitialConfigController {
 
     @FXML
     private void loadFromFileButtonClicked(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Load Game Of Life Board");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game Of Life Files", "*.gol"));
+//        FileChooser fileChooser = new FileChooser();
+//        fileChooser.setTitle("Load Game Of Life Board");
+//        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Game Of Life Files", "*.gol"));
+//
+//        File file = fileChooser.showOpenDialog(primaryStage);
+//        if (file != null) {
+//            try (FileGameOfLifeBoardDao dao = new FileGameOfLifeBoardDao(file.getAbsolutePath())) {
+//                GameOfLifeBoard gameOfLifeBoard = dao.read();
+//
+//                FXMLLoader loader = new FXMLLoader(getClass().getResource("SimulationScene.fxml"));
+//                Scene simulationScene = new Scene(loader.load(), 600, 450);
+//
+//                SimulationController simulationController1 = loader.getController();
+//                simulationController1.postInitialize(gameOfLifeBoard);
+//
+//                primaryStage.setScene(simulationScene);
+//                primaryStage.setTitle("GOL - Simulation");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
-        File file = fileChooser.showOpenDialog(primaryStage);
-        if (file != null) {
-            try (FileGameOfLifeBoardDao dao = new FileGameOfLifeBoardDao(file.getAbsolutePath())) {
+        Dialog<String> dialog = new ChoiceDialog<>("Select Board", getAvailableBoardNamesFromDatabase());
+        dialog.setTitle("Load Game Of Life Board");
+        dialog.setHeaderText("Select a board to load:");
+        dialog.setContentText("Available boards:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(boardName -> {
+            try (JdbcGameOfLifeBoardDao dao = new JdbcGameOfLifeBoardDao(boardName)) {
                 GameOfLifeBoard gameOfLifeBoard = dao.read();
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("SimulationScene.fxml"));
                 Scene simulationScene = new Scene(loader.load(), 600, 450);
 
-                SimulationController simulationController1 = loader.getController();
-                simulationController1.postInitialize(gameOfLifeBoard);
+                SimulationController simulationController = loader.getController();
+                simulationController.postInitialize(gameOfLifeBoard);
 
                 primaryStage.setScene(simulationScene);
                 primaryStage.setTitle("GOL - Simulation");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     @FXML
@@ -193,6 +217,22 @@ public class InitialConfigController {
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private List<String> getAvailableBoardNamesFromDatabase() {
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement statement = connection.prepareStatement("SELECT name FROM game_of_life_boards");
+             ResultSet resultSet = statement.executeQuery()) {
+
+            List<String> boardNames = new ArrayList<>();
+            while (resultSet.next()) {
+                boardNames.add(resultSet.getString("name"));
+            }
+            return boardNames;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return List.of("Error loading boards");
         }
     }
 }

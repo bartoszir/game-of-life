@@ -4,6 +4,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.example.exceptions.AssumptionException;
+import org.example.exceptions.BadFieldValueException;
+import org.example.exceptions.GameOfLifeCellNullException;
+import org.example.exceptions.IndexOutOfArrayException;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -12,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GameOfLifeLine implements PropertyChangeListener, Serializable, Cloneable {
+    private static final Logger logger = LogManager.getLogger(GameOfLifeLine.class);
     protected List<GameOfLifeCell> cellsList;
     public int liveCount;
     public int deadCount;
@@ -21,7 +28,11 @@ public abstract class GameOfLifeLine implements PropertyChangeListener, Serializ
         int count = 0;
         for (GameOfLifeCell cell : cellsList) {
             if (cell == null) {
-                throw new IllegalArgumentException("The cell cannot be NULL.");
+                //throw new IllegalArgumentException("The cell cannot be NULL.");
+                var exception = new GameOfLifeCellNullException("class.null-reference",
+                        new IllegalArgumentException());
+                exception.log(logger);
+                throw exception;
             }
             if (cell.getCellValue()) {
                 count++;
@@ -65,7 +76,11 @@ public abstract class GameOfLifeLine implements PropertyChangeListener, Serializ
             }
 
         } else {
-            throw new IllegalArgumentException("Index is out of array.");
+            //throw new IllegalArgumentException("Index is out of array.");
+            var exception = new IndexOutOfArrayException("array.illegal-argument",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
     }
 
@@ -145,11 +160,19 @@ public abstract class GameOfLifeLine implements PropertyChangeListener, Serializ
         return gameOfLifeArray;
     }
 
-    // czy tu potrzebujemy glebokiej kopii dla kazdej komorki w cellsList?
     @Override
-    public GameOfLifeLine clone() throws CloneNotSupportedException {
-        GameOfLifeLine clone = (GameOfLifeLine) super.clone();
-        clone.cellsList = new ArrayList<>(cellsList);
-        return clone;
+    public GameOfLifeLine clone() throws AssumptionException {
+        try {
+            GameOfLifeLine clone = (GameOfLifeLine) super.clone();
+            clone.cellsList = new ArrayList<>(this.cellsList.size());
+            for (GameOfLifeCell cell : cellsList) {
+                clone.cellsList.add((GameOfLifeCell) cell.clone());
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            var exception = new AssumptionException("wrong-assumption.clone", e);
+            exception.log(logger);
+            throw exception;
+        }
     }
 }

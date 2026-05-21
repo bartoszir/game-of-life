@@ -1,10 +1,14 @@
 package org.example;
 
+import org.example.exceptions.AssumptionException;
+import org.example.exceptions.GameOfLifeCellNullException;
+import org.example.exceptions.IndexOutOfArrayException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,12 +19,15 @@ class GameOfLifeCellTest {
 
     @BeforeEach
     public void setUp() {
+        Locale.setDefault(new Locale("en", "EN"));
         cell = new GameOfLifeCell();
         cellSecond = new GameOfLifeCell();
         testNeighbours = new GameOfLifeCell[8];
         for (int i = 0; i < testNeighbours.length; i++) {
             testNeighbours[i] = new GameOfLifeCell();
+            cell.setNeighbour(i, testNeighbours[i]);
         }
+
     }
 
     @Test
@@ -38,12 +45,12 @@ class GameOfLifeCellTest {
     public void testSetNeighbourInvalidIndex() {
         GameOfLifeCell testNeighbour = new GameOfLifeCell();
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(IndexOutOfArrayException.class, () -> {
             cell.setNeighbour(-1, testNeighbour);
         });
         assertEquals("Index is out of array.", exception.getMessage());
 
-        Exception exception2 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception2 = assertThrows(IndexOutOfArrayException.class, () -> {
             cell.setNeighbour(8, testNeighbour);
         });
 
@@ -197,13 +204,12 @@ class GameOfLifeCellTest {
     @Test
     public void cloneTest() {
         try {
-            GameOfLifeCell cell = new GameOfLifeCell();
             GameOfLifeCell clone = cell.clone();
-            assertNotSame(cell, clone);
+            assertEquals(cell, clone);
             assertEquals(cell.getCellValue(), clone.getCellValue());
 
             clone.setCellValue(true);
-            assertNotSame(cell.getCellValue(), clone.getCellValue());
+            assertNotEquals(cell.getCellValue(), clone.getCellValue());
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
@@ -218,6 +224,7 @@ class GameOfLifeCellTest {
 
         cell.setCellValue(false);
         cellSecond.setCellValue(true);
+        assertNotEquals(cell, cellSecond);
         assertEquals(-1, cell.compareTo(cellSecond));
 
         cell.setCellValue(true);
@@ -237,8 +244,8 @@ class GameOfLifeCellTest {
 
     @Test
     public void compareToNullExceptionTest() {
-        Exception exception = assertThrows(NullPointerException.class, () -> cell.compareTo(null));
-        assertEquals("Cannot compare to null", exception.getMessage());
+        Exception exception = assertThrows(AssumptionException.class, () -> cell.compareTo(null));
+        assertEquals("Variable cannot be null.", exception.getMessage());
     }
 
 }

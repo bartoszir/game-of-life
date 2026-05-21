@@ -1,14 +1,12 @@
 package org.example;
 
+import org.example.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,6 +23,7 @@ class GameOfLifeBoardTest {
 
     @BeforeEach
     public void setUp() {
+        Locale.setDefault(new Locale("en", "EN"));
         testGameSimulator = new PlainGameOfLifeSimulator();
         testGame = new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, testGameSimulator);
 
@@ -57,15 +56,15 @@ class GameOfLifeBoardTest {
 
     @Test
     public void testGetRow() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(IndexOutOfArrayException.class, () -> {
             testGame.getRow(-1);
         });
-        assertEquals("Number of row is out of array.", exception.getMessage());
+        assertEquals("Number of rows is out of array.", exception.getMessage());
 
-        Exception exception2 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception2 = assertThrows(IndexOutOfArrayException.class, () -> {
             testGame.getRow(testNumRows + 1);
         });
-        assertEquals("Number of row is out of array.", exception2.getMessage());
+        assertEquals("Number of rows is out of array.", exception2.getMessage());
 
         GameOfLifeCell[] expectedRowCells = new GameOfLifeCell[testNumCols];
         for (int i = 0; i < testNumCols; i++) {
@@ -82,15 +81,17 @@ class GameOfLifeBoardTest {
     @Test
     public void testGetColumn() {
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(IndexOutOfArrayException.class, () -> {
             testGame.getColumn(-1);
         });
-        assertEquals("Number of column is out of array.", exception.getMessage());
+        assertEquals("Number of columns is out of array.", exception.getMessage());
+        // assertEquals("array.illegal-argument", exception.getMessage());
 
-        Exception exception2 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception2 = assertThrows(IndexOutOfArrayException.class, () -> {
             testGame.getColumn(testNumCols + 1);
         });
-        assertEquals("Number of column is out of array.", exception2.getMessage());
+        assertEquals("Number of columns is out of array.", exception2.getMessage());
+        //assertEquals("array.illegal-argument", exception2.getMessage());
 
         GameOfLifeCell[] expectedColCells = new GameOfLifeCell[testNumRows];
         for (int i = 0; i < testNumRows; i++) {
@@ -123,62 +124,62 @@ class GameOfLifeBoardTest {
     @Test
     public void testConstructorInvalidInputs() {
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(TooSmallFieldValueException.class, () -> {
             new GameOfLifeBoard(0, testNumCols, testNumberOfLiveCells, testGameSimulator);
         });
-        assertEquals("Number of rows must be greater than 0", exception.getMessage());
+        assertEquals("Number must be greater than 0.", exception.getMessage());
 
-        Exception exception2 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception2 = assertThrows(TooSmallFieldValueException.class, () -> {
             new GameOfLifeBoard(testNumRows, 0, testNumberOfLiveCells, testGameSimulator);
         });
-        assertEquals("Number of columns must be greater than 0", exception2.getMessage());
+        assertEquals("Number must be greater than 0.", exception2.getMessage());
 
-        Exception exception3 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception3 = assertThrows(TooSmallFieldValueException.class, () -> {
             new GameOfLifeBoard(testNumRows, testNumCols, 0, testGameSimulator);
         });
-        assertEquals("Number of life cells must be greater than 0", exception3.getMessage());
+        assertEquals("Number of life cells must be greater than 0.", exception3.getMessage());
 
         int testTooMuchLiveCells = testNumRows * testNumCols + 1;
-        Exception exception4 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception4 = assertThrows(BadFieldValueException.class, () -> {
             new GameOfLifeBoard(testNumRows, testNumCols, testTooMuchLiveCells, testGameSimulator);
         });
-        assertEquals("Number of life cells can't be be greater than number of all cells", exception4.getMessage());
+        assertEquals("Number of life cells can't be greater than number of all cells.", exception4.getMessage());
 
-        Exception exception5 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception5 = assertThrows(BadFieldValueException.class, () -> {
             new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, null);
         });
-        assertEquals("GameOfLifeSimulator cannot be null", exception5.getMessage());
+        assertEquals("Variable cannot be null.", exception5.getMessage());
     }
 
     @Test
     public void testSetInvalidInputs() {
         //incorrect inputs for row
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(BadFieldValueException.class, () -> {
             testGame.set(-1, testNumCols - 1, true);
         });
-        assertEquals("Number of row is out of array.", exception.getMessage());
+        assertEquals("Number of rows is out of array.", exception.getMessage());
 
-        Exception exception1 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception1 = assertThrows(BadFieldValueException.class, () -> {
             testGame.set(testNumRows * testNumCols, testNumCols - 1, true);
         });
-        assertEquals("Number of row is out of array.", exception1.getMessage());
+        assertEquals("Number of rows is out of array.", exception1.getMessage());
 
 
         //incorrect inputs for column
-        Exception exception2 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception2 = assertThrows(BadFieldValueException.class, () -> {
             testGame.set(testNumRows - 1, -1, true);
         });
-        assertEquals("Number of column is out of array.", exception2.getMessage());
+        assertEquals("Number of columns is out of array.", exception2.getMessage());
 
-        Exception exception3 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception3 = assertThrows(BadFieldValueException.class, () -> {
             testGame.set(testNumRows - 1, testNumRows + 1, true);
         });
-        assertEquals("Number of column is out of array.", exception3.getMessage());
+        assertEquals("Number of columns is out of array.", exception3.getMessage());
 
-        Exception exception4 = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception4 = assertThrows(BadFieldValueException.class, () -> {
             testGame.set(testNumRows - 1, testNumRows * testNumCols, true);
         });
-        assertEquals("Number of column is out of array.", exception4.getMessage());
+        assertEquals("Number of columns is out of array.", exception4.getMessage());
     }
 
     @Test
@@ -236,8 +237,8 @@ class GameOfLifeBoardTest {
 
             clone.set(4, 4, !clone.get(4, 4));
             assertNotEquals(testGame.get(4, 4), clone.get(4, 4));
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+        } catch (AssumptionException e) {
+            throw new BasicRuntimeException("wrong-assumption.clone", e);
         }
     }
 }

@@ -4,17 +4,22 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.example.exceptions.AssumptionException;
+import org.example.exceptions.GameOfLifeCellNullException;
+import org.example.exceptions.IndexOutOfArrayException;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
 public class GameOfLifeCell implements Serializable, Cloneable, Comparable<GameOfLifeCell> {
+    private static final Logger logger = LogManager.getLogger(GameOfLifeCell.class);
     private boolean value;
     // private GameOfLifeCell[] neighbours;
     private List<GameOfLifeCell> neighbours;
@@ -31,7 +36,9 @@ public class GameOfLifeCell implements Serializable, Cloneable, Comparable<GameO
         if (index >= 0 && index <= 7) {
             this.neighbours.set(index, neighbour);
         } else {
-            throw new IllegalArgumentException("Index is out of array.");
+            var exception = new IndexOutOfArrayException("array.illegal-argument", new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
     }
 
@@ -173,14 +180,24 @@ public class GameOfLifeCell implements Serializable, Cloneable, Comparable<GameO
     public GameOfLifeCell clone() throws CloneNotSupportedException {
         GameOfLifeCell clone = new GameOfLifeCell();
         clone.value = this.value; // Shallow Copy dla danych prostych
-        clone.neighbours = new ArrayList<>(this.neighbours); // Deep Copy dla kolekcji
+
+        clone.neighbours = new ArrayList<>(this.neighbours.size()); // Deep Copy dla kolekcji
+        for (int i = 0; i < this.neighbours.size(); i++) {
+            GameOfLifeCell neighbour = new GameOfLifeCell();
+            neighbour.setCellValue(getNeighboursCellValues().get(i));
+            clone.neighbours.add(neighbour);
+        }
         return clone;
     }
 
     @Override
-    public int compareTo(GameOfLifeCell other) throws NullPointerException {
+    public int compareTo(GameOfLifeCell other) throws GameOfLifeCellNullException {
         if (other == null) {
-            throw new NullPointerException("Cannot compare to null");
+            //throw new NullPointerException("Cannot compare to null");\
+            var exception = new AssumptionException("class.null-reference",
+                    new NullPointerException());
+            exception.log(logger);
+            throw exception;
         }
 
         int valueComparison = Boolean.compare(this.value, other.value);

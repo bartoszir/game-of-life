@@ -1,11 +1,17 @@
 package org.example;
 
+import org.example.exceptions.FileOperationException;
+import org.example.exceptions.GameOfLifeDaoException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,8 +30,13 @@ public class FileGameOfLifeBoardDaoTest {
         gameOfLifeBoard.doSimulationStep();
     }
 
+    @BeforeEach
+    public void setUp() {
+        Locale.setDefault(new Locale("en", "EN"));
+    }
+
     @Test
-    public void writeReadTest() {
+    public void writeReadTest() throws FileOperationException, GameOfLifeDaoException {
         fileGameOfLifeDao = factory.getFileDao("xxx");
         fileGameOfLifeDao.write(gameOfLifeBoard);
 
@@ -41,9 +52,11 @@ public class FileGameOfLifeBoardDaoTest {
     public void readFileNotFoundTest() {
         FileGameOfLifeBoardDao dao = new FileGameOfLifeBoardDao("thereIsNoFile");
 
-        Exception exception = assertThrows(IllegalArgumentException.class, dao::read);
+        Exception exception = assertThrows(FileOperationException.class, dao::read);
 
-        assertEquals("Plik nie znaleziony: thereIsNoFile", exception.getMessage());
+        assertEquals("Error when trying to open a file. " +
+                "Make sure that the file existsand program has " +
+                "the rights to read it.", exception.getMessage());
     }
 
     @Test
@@ -55,10 +68,12 @@ public class FileGameOfLifeBoardDaoTest {
             FileGameOfLifeBoardDao dao = new FileGameOfLifeBoardDao(testFileName);
 
             // Oczekujemy, że odczyt rzuci RuntimeException z powodu IOException
-            Exception exception = assertThrows(RuntimeException.class, dao::read);
+            Exception exception = assertThrows(FileOperationException.class, dao::read);
 
             // Weryfikacja treści komunikatu błędu
-            assertTrue(exception.getMessage().contains("Błąd odczytu z pliku: " + testFileName));
+            assertEquals("Error when trying to open a file. " +
+                    "Make sure that the file existsand program has " +
+                    "the rights to read it.", exception.getMessage());
         } catch (IOException e) {
             fail("Test nie powiódł się z powodu błędu zapisu: " + e.getMessage());
         }
@@ -68,7 +83,7 @@ public class FileGameOfLifeBoardDaoTest {
     
     @Test
     public void readExceptionTest() {
-        Exception exception = assertThrows(RuntimeException.class, () -> {
+        Exception exception = assertThrows(FileOperationException.class, () -> {
             Dao<GameOfLifeBoard> fileGameOfLifeDao;
             fileGameOfLifeDao = factory.getFileDao("Case2");
             fileGameOfLifeDao.read();

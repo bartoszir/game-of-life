@@ -1,5 +1,9 @@
 package org.example;
 
+import org.example.exceptions.AssumptionException;
+import org.example.exceptions.BasicRuntimeException;
+import org.example.exceptions.GameOfLifeCellNullException;
+import org.example.exceptions.IndexOutOfArrayException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +20,7 @@ class GameOfLifeLineTest {
     private GameOfLifeCell deadCell;
     private List<GameOfLifeCell> cellsList;
     private GameOfLifeLine gameOfLifeLine;
+    private GameOfLifeCell[] testNeighbours;
 
     List<GameOfLifeCell> cellsListSecond;
     GameOfLifeLine gameOfLifeLineSecond;
@@ -28,11 +34,18 @@ class GameOfLifeLineTest {
 
     @BeforeEach
     public void setUp() {
+        Locale.setDefault(new Locale("en", "EN"));
         // Initialize cells: 2 alive, 3 dead for testing
         liveCell = new GameOfLifeCell();
         liveCell.updateState(true); // Make the cell alive
-
         deadCell = new GameOfLifeCell(); // Dead by default
+
+        testNeighbours = new GameOfLifeCell[8];
+        for (int i = 0; i < testNeighbours.length; i++) {
+            testNeighbours[i] = new GameOfLifeCell();
+            liveCell.setNeighbour(i, testNeighbours[i]);
+            deadCell.setNeighbour(i, testNeighbours[i]);
+        }
 
         cellsList = new ArrayList<>(Arrays.asList(liveCell, deadCell, liveCell, deadCell, deadCell));
         gameOfLifeLine = new GameOfLifeLineImpl(cellsList);
@@ -66,11 +79,11 @@ class GameOfLifeLineTest {
     public void testConstructorWithNullCells() {
         List<GameOfLifeCell> cellsWithNulls = new ArrayList<>(Arrays.asList(new GameOfLifeCell(), null, new GameOfLifeCell()));
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(GameOfLifeCellNullException.class, () -> {
             new GameOfLifeLineImpl(cellsWithNulls);
         });
 
-        assertEquals("The cell cannot be NULL.", exception.getMessage());
+        assertEquals("Variable cannot be null.", exception.getMessage());
     }
 
     @Test
@@ -88,23 +101,6 @@ class GameOfLifeLineTest {
     public void testCountDeadCells() {
         assertEquals(3, gameOfLifeLine.countDeadCells(), "The dead cell count should be 3.");
     }
-
-    /*@Test
-    public void testSetCellValidIndex() {
-        GameOfLifeCell newCell = new GameOfLifeCell();
-        newCell.updateState(false);
-        gameOfLifeLine.getCell(1).updateState(true);
-        int previousCountOfLiveCells = gameOfLifeLine.countAliveCells();
-
-        gameOfLifeLine.setCell(1, newCell);
-        assertSame(newCell, gameOfLifeLine.getCell(1), "The cell at index 1 should be replaced by newCell.");
-
-        gameOfLifeLine.getCell(1).updateState(true);
-        assertEquals(previousCountOfLiveCells, gameOfLifeLine.countAliveCells());
-
-        gameOfLifeLine.getCell(1).updateState(false);
-        assertEquals(previousCountOfLiveCells - 1, gameOfLifeLine.countAliveCells());
-    }*/
 
     @Test
     public void testSetCellAtValidIndexWithDeadCell() {
@@ -183,10 +179,10 @@ class GameOfLifeLineTest {
     @Test
     public void testSetCellInvalidIndex() {
         GameOfLifeCell newCell = new GameOfLifeCell();
-        assertThrows(IllegalArgumentException.class, () -> gameOfLifeLine.setCell(-1, newCell),
-                "Setting a cell at an invalid index should throw an exception.");
-        assertThrows(IllegalArgumentException.class, () -> gameOfLifeLine.setCell(5, newCell),
-                "Setting a cell at an invalid index should throw an exception.");
+        assertThrows(IndexOutOfArrayException.class, () -> gameOfLifeLine.setCell(-1, newCell),
+                "Index is out of array.");
+        assertThrows(IndexOutOfArrayException.class, () -> gameOfLifeLine.setCell(5, newCell),
+                "Index is out of array.");
 
     }
 
@@ -277,8 +273,14 @@ class GameOfLifeLineTest {
             PropertyChangeEvent event = new PropertyChangeEvent(liveCell, "cellValue", true, false);
             clone.propertyChange(event);
             assertEquals(gameOfLifeLine.cellsList, clone.cellsList); // bo komorki w cellsList wskazuja na te same obiekty
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+
+            GameOfLifeCell cloneCell = new GameOfLifeCell();
+            GameOfLifeCell cell = new GameOfLifeCell();
+            cell.setCellValue(true);
+            clone.setCell(1, cloneCell);
+            gameOfLifeLine.setCell(1, cell);
+        } catch (AssumptionException e) {
+            throw new BasicRuntimeException("wrong-assumption.clone", e);
         }
     }
 }

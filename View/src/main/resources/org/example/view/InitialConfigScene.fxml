@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="10" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.view.InitialConfigController">
+
+    <Label fx:id="setupTitle" textFill="midnightblue">
+        <font>
+            <Font name="System Bold" size="30.0"/>
+        </font>
+    </Label>
+
+    <HBox spacing="20" alignment="CENTER">
+        <Button fx:id="englishButton" onAction="#changeLanguageToEnglish"/>
+        <Button fx:id="polishButton" onAction="#changeLanguageToPolish"/>
+    </HBox>
+
+    <HBox spacing="20" alignment="CENTER">
+        <Button fx:id="loadFromFileButton" onAction="#loadFromFileButtonClicked"/>
+        <Button fx:id="authorsButton" onAction="#showAuthors"/>
+    </HBox>
+
+    <VBox spacing="10" alignment="CENTER" prefWidth="200">
+        <HBox spacing="10" alignment="CENTER">
+            <Label fx:id="boardWidthText"/>
+            <TextField fx:id="boardWidthField" prefWidth="50"/>
+        </HBox>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Label fx:id="boardHeightText"/>
+            <TextField fx:id="boardHeightField" prefWidth="50"/>
+        </HBox>
+
+        <VBox spacing="10" alignment="CENTER">
+            <Label fx:id="cellsDensityText"/>
+            <ChoiceBox fx:id="densityLevelChoiceBox" prefWidth="150"/>
+        </VBox>
+    </VBox>
+
+    <Region prefHeight="20"/>
+
+    <Button fx:id="startSimulationButton" onAction="#startSimulation" prefWidth="140"
+            prefHeight="40"/>
+
+</VBox>

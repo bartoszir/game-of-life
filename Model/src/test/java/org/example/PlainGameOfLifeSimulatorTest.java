@@ -3,6 +3,8 @@ package org.example;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -19,6 +21,7 @@ class PlainGameOfLifeSimulatorTest {
 
     @BeforeEach
     public void setUp() {
+        Locale.setDefault(new Locale("en", "EN"));
         testGameSimulator = new PlainGameOfLifeSimulator();
         testGameBoard = new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, testGameSimulator);
 

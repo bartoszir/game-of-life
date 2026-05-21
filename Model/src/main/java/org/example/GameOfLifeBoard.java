@@ -4,6 +4,12 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.example.exceptions.AssumptionException;
+import org.example.exceptions.BadFieldValueException;
+import org.example.exceptions.IndexOutOfArrayException;
+import org.example.exceptions.TooSmallFieldValueException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,7 +17,7 @@ import java.util.List;
 import java.util.Random;
 
 public class GameOfLifeBoard implements Serializable, Cloneable {
-
+    private static final Logger logger = LogManager.getLogger(GameOfLifeBoard.class);
     private GameOfLifeCell[][] board; // = new boolean[height][width];
     private GameOfLifeSimulator gameSimulator;
     private int numRows; //later it should be up to the user how many Rows and Columns there will be
@@ -23,24 +29,44 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
                            GameOfLifeSimulator gameSimulator) {
 
         if (numRows < 1) {
-            throw new IllegalArgumentException("Number of rows must be greater than 0");
+            //throw new IllegalArgumentException("Number of rows must be greater than 0");
+            var exception = new TooSmallFieldValueException("array.zero-as-argument",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
         this.numRows = numRows;
 
         if (numCols < 1) {
-            throw new IllegalArgumentException("Number of columns must be greater than 0");
+            //throw new IllegalArgumentException("Number of columns must be greater than 0");
+            var exception = new TooSmallFieldValueException("array.zero-as-argument",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
         this.numCols = numCols;
 
         if (numberOfLifeCells < 1) {
-            throw new IllegalArgumentException("Number of life cells must be greater than 0");
+            //throw new IllegalArgumentException("Number of life cells must be greater than 0");
+            var exception = new TooSmallFieldValueException("cells.negative-value",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         } else if (numberOfLifeCells > (numRows * numCols)) {
-            throw new IllegalArgumentException("Number of life cells can't be be greater than number of all cells");
+            //throw new IllegalArgumentException("Number of life cells can't be greater than number of all cells");
+            var exception = new BadFieldValueException("cells.illegal-value",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
         this.numberOfLiveCells = numberOfLifeCells;
 
         if (gameSimulator == null) {
-            throw new IllegalArgumentException("GameOfLifeSimulator cannot be null");
+            //throw new IllegalArgumentException("GameOfLifeSimulator cannot be null");
+            var exception = new BadFieldValueException("class.null-reference",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
         this.gameSimulator = gameSimulator;
 
@@ -67,10 +93,18 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
 
     public void set(int rowNumber, int colNumber, boolean newState) {
         if ((rowNumber < 0) || (rowNumber >= numRows)) {
-            throw new IllegalArgumentException("Number of row is out of array.");
+            //throw new IllegalArgumentException("Number of row is out of array.");
+            var exception = new IndexOutOfArrayException("array.illegal-row-argument",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
         if ((colNumber < 0) || (colNumber >= numCols)) {
-            throw new IllegalArgumentException("Number of column is out of array.");
+            //throw new IllegalArgumentException("Number of column is out of array.");
+            var exception = new IndexOutOfArrayException("array.illegal-column-argument",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
         board[rowNumber][colNumber].updateState(newState);
     }
@@ -149,7 +183,11 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
 
     public GameOfLifeRow getRow(int row) {
         if (row < 0 || row >= numRows) {
-            throw new IllegalArgumentException("Number of row is out of array.");
+            //throw new IllegalArgumentException("Number of row is out of array.");
+            var exception = new IndexOutOfArrayException("array.illegal-row-argument",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
 
         // GameOfLifeCell[] rowCells = new GameOfLifeCell[numCols];
@@ -164,7 +202,11 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
 
     public GameOfLifeColumn getColumn(int col) {
         if (col < 0 || col >= numCols) {
-            throw new IllegalArgumentException("Number of column is out of array.");
+            //throw new IllegalArgumentException("Number of column is out of array.");
+            var exception = new IndexOutOfArrayException("array.illegal-column-argument",
+                    new IllegalArgumentException());
+            exception.log(logger);
+            throw exception;
         }
 
         // GameOfLifeCell[] columnCells = new GameOfLifeCell[numRows];
@@ -227,16 +269,22 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
     }
 
     @Override
-    public GameOfLifeBoard clone() throws CloneNotSupportedException {
-        GameOfLifeBoard clone = (GameOfLifeBoard) super.clone();
+    public GameOfLifeBoard clone() throws AssumptionException {
+        try {
+            GameOfLifeBoard clone = (GameOfLifeBoard) super.clone();
 
-        clone.board = new GameOfLifeCell[numRows][numCols];
-        for (int r = 0; r < numRows; r++) {
-            for (int c = 0; c < numCols; c++) {
-                clone.board[r][c] = this.board[r][c].clone();
+            clone.board = new GameOfLifeCell[numRows][numCols];
+            for (int r = 0; r < numRows; r++) {
+                for (int c = 0; c < numCols; c++) {
+                    clone.board[r][c] = this.board[r][c].clone();
+                }
             }
-        }
 
-        return clone;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            var exception = new AssumptionException("wrong-assumption.clone", e);
+            exception.log(logger);
+            throw exception;
+        }
     }
 }

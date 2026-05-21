@@ -39,11 +39,11 @@ class PlainGameOfLifeSimulatorTest {
         testBoard[4][5].updateState(true);
         testGameBoard.setGameBoard(testBoard);
 
-        assertFalse(testGameBoard.getState(4, 4));
+        assertFalse(testGameBoard.get(4, 4));
         testGameBoard.setCellsNeighbours();
         testGameSimulator.doStep(testGameBoard);
 
-        assertTrue(testGameBoard.getState(4, 4));
+        assertTrue(testGameBoard.get(4, 4));
 
     }
 
@@ -57,11 +57,11 @@ class PlainGameOfLifeSimulatorTest {
         testGameBoard.setGameBoard(testBoard);
         testGameBoard.setCellsNeighbours();
         testGameBoard.doSimulationStep();
-        assertTrue(testGameBoard.getState(4, 4));
+        assertTrue(testGameBoard.get(4, 4));
 
         testBoard[5][5].updateState(false);
         testGameSimulator.doStep(testGameBoard);
-        assertTrue(testGameBoard.getState(4, 4));
+        assertTrue(testGameBoard.get(4, 4));
 
     }
 
@@ -76,8 +76,8 @@ class PlainGameOfLifeSimulatorTest {
         testGameBoard.setCellsNeighbours();
         testGameSimulator.doStep(testGameBoard);
 
-        assertFalse(testGameBoard.getState(4, 5));
-        assertFalse(testGameBoard.getState(5, 5));
+        assertFalse(testGameBoard.get(4, 5));
+        assertFalse(testGameBoard.get(5, 5));
     }
 
     @Test
@@ -94,7 +94,7 @@ class PlainGameOfLifeSimulatorTest {
         testGameBoard.setCellsNeighbours();
         testGameSimulator.doStep(testGameBoard);
 
-        assertFalse(testGameBoard.getState(5, 5));
+        assertFalse(testGameBoard.get(5, 5));
     }
 
     @Test
@@ -109,7 +109,7 @@ class PlainGameOfLifeSimulatorTest {
         testGameBoard.setCellsNeighbours();
         testGameSimulator.doStep(testGameBoard);
 
-        assertTrue(testGameBoard.getState(3, 0));
+        assertTrue(testGameBoard.get(3, 0));
 
         //now we will see how the algorithm behaves when the only cell that lives on our board will be the cell [3;0]
         testBoard[3][testNumCols - 1].updateState(false);
@@ -118,7 +118,7 @@ class PlainGameOfLifeSimulatorTest {
         testGameBoard.setGameBoard(testBoard);
         testGameSimulator.doStep(testGameBoard);
 
-        assertFalse(testGameBoard.getState(3, 0));
+        assertFalse(testGameBoard.get(3, 0));
 
         //checking how the algorithm behaves when the cell is in the corner
         testBoard[testNumRows - 1][testNumCols - 1].updateState(true); //cell is located in the bottom's right corner
@@ -128,7 +128,7 @@ class PlainGameOfLifeSimulatorTest {
         testGameBoard.setGameBoard(testBoard);
         testGameSimulator.doStep(testGameBoard);
 
-        assertTrue(testGameBoard.getState(testNumRows - 1, testNumCols - 1));
+        assertTrue(testGameBoard.get(testNumRows - 1, testNumCols - 1));
 
     }
 }

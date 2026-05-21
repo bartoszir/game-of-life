@@ -2,24 +2,32 @@ package org.example;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
+import java.util.List;
 
 public class GameOfLifeCell {
     private boolean value;
-    private GameOfLifeCell[] neighbours;
+    // private GameOfLifeCell[] neighbours;
+    private List<GameOfLifeCell> neighbours;
     private PropertyChangeSupport support;
 
     public GameOfLifeCell() {
         this.value = false;
-        this.neighbours = new GameOfLifeCell[8];
+        // this.neighbours = new GameOfLifeCell[8];
+        this.neighbours = Arrays.asList(new GameOfLifeCell[8]);
         this.support = new PropertyChangeSupport(this);
     }
 
     public void setNeighbour(int index, GameOfLifeCell neighbour) {
         if (index >= 0 && index <= 7) {
-            this.neighbours[index] = neighbour;
+            this.neighbours.set(index, neighbour);
         } else {
             throw new IllegalArgumentException("Index is out of array.");
         }
+    }
+
+    public GameOfLifeCell getNeighbour(int index) {
+        return this.neighbours.get(index);
     }
 
     public boolean getCellValue() {
@@ -73,7 +81,7 @@ public class GameOfLifeCell {
         this.support.addPropertyChangeListener(listener);
     }
 
-    /*public void removeCellValueListener(PropertyChangeListener listener) {
+    public void removeCellValueListener(PropertyChangeListener listener) {
         this.support.removePropertyChangeListener(listener);
-    }*/
+    }
 }

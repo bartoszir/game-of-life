@@ -26,7 +26,7 @@ public class Main {
         for (int r = 0; r < board.getNumRows(); r++) {
             System.out.print(r + " ");
             for (int c = 0; c < board.getNumCols(); c++) {
-                System.out.print(board.getState(r, c) ? " @ " : " . ");
+                System.out.print(board.get(r, c) ? " @ " : " . ");
             }
             System.out.println();
         }

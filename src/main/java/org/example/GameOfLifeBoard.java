@@ -1,10 +1,12 @@
 package org.example;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class GameOfLifeBoard {
 
-    private GameOfLifeCell[][] board; // = new boolean[height][width];
+    private final GameOfLifeCell[][] board; // = new boolean[height][width];
     private GameOfLifeSimulator gameSimulator;
     private int numRows; //later it should be up to the user how many Rows and Columns there will be
     private int numCols;
@@ -47,17 +49,14 @@ public class GameOfLifeBoard {
     }
 
 
-    public GameOfLifeCell get(int rowNumber, int colNumber) {
+    public boolean get(int rowNumber, int colNumber) {
+        return board[rowNumber][colNumber].getCellValue();
+    }
+
+
+    public GameOfLifeCell getCell(int rowNumber, int colNumber) {
         return board[rowNumber][colNumber];
     }
-
-    public boolean getState(int rowNumber, int colNumber) {
-        return get(rowNumber, colNumber).getCellValue();
-    }
-
-    /*public void setState(int rowNumber, int colNumber, boolean newState) {
-        get(rowNumber, colNumber).updateState(newState);
-    }*/
 
 
     public void set(int rowNumber, int colNumber, boolean newState) {
@@ -99,8 +98,8 @@ public class GameOfLifeBoard {
             int r = random.nextInt(numRows); //0-7
             int c = random.nextInt(numCols);
 
-            if (!get(r, c).getCellValue()) {
-                get(r, c).updateState(true);
+            if (!get(r, c)) {
+                getCell(r, c).updateState(true);
                 liveCellsLeftCount--;
             }
         }
@@ -116,7 +115,7 @@ public class GameOfLifeBoard {
             for (int c = 0; c < numCols; c++) {
 
                 cellNeighboursIndex = 0;
-                GameOfLifeCell cell = get(r, c);
+                GameOfLifeCell cell = getCell(r, c);
 
                 //it starts with the top left corner and goes clockwise
                 for (int i = -1; i <= 1; i++) {
@@ -131,7 +130,7 @@ public class GameOfLifeBoard {
                         int neighborRow = (r + i + numRows) % numRows;
                         int neighborCol = (c + j + numCols) % numCols;
 
-                        GameOfLifeCell neighbour = get(neighborRow, neighborCol);
+                        GameOfLifeCell neighbour = getCell(neighborRow, neighborCol);
 
                         cell.setNeighbour(cellNeighboursIndex, neighbour);
                         cellNeighboursIndex++;
@@ -147,9 +146,12 @@ public class GameOfLifeBoard {
             throw new IllegalArgumentException("Number of row is out of array.");
         }
 
-        GameOfLifeCell[] rowCells = new GameOfLifeCell[numCols];
+        // GameOfLifeCell[] rowCells = new GameOfLifeCell[numCols];
+        List<GameOfLifeCell> rowCells = new ArrayList<>();
         for (int i = 0; i < numCols; i++) {
-            rowCells[i] = board[row][i];
+            // rowCells[i] = board[row][i];
+            rowCells.add(new GameOfLifeCell());
+            rowCells.get(i).updateState(get(row, i));
         }
         return new GameOfLifeRow(rowCells);
     }
@@ -159,9 +161,12 @@ public class GameOfLifeBoard {
             throw new IllegalArgumentException("Number of column is out of array.");
         }
 
-        GameOfLifeCell[] columnCells = new GameOfLifeCell[numRows];
+        // GameOfLifeCell[] columnCells = new GameOfLifeCell[numRows];
+        List<GameOfLifeCell> columnCells = new ArrayList<>();
         for (int i = 0; i < numRows; i++) {
-            columnCells[i] = board[i][col];
+            // columnCells[i] = board[i][col];
+            columnCells.add(new GameOfLifeCell());
+            columnCells.get(i).updateState(get(i, col));
         }
         return new GameOfLifeColumn(columnCells);
     }

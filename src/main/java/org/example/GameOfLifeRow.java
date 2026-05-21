@@ -1,7 +1,9 @@
 package org.example;
 
+import java.util.List;
+
 public class GameOfLifeRow extends GameOfLifeLine {
-    public GameOfLifeRow(GameOfLifeCell[] cellsArray) {
+    public GameOfLifeRow(List<GameOfLifeCell> cellsArray) {
         super(cellsArray);
     }
 }

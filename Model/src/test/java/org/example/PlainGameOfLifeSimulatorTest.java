@@ -13,7 +13,8 @@ class PlainGameOfLifeSimulatorTest {
     int testNumRows = 11;
     int testNumCols = 11;
     // int testNumberOfMaxIterations = 3;
-    int testNumberOfLiveCells = 15;
+//    int testNumberOfLiveCells = 15;
+    String testName = "gameBoard";
     GameOfLifeBoard testGameBoard;
     GameOfLifeSimulator testGameSimulator;
     GameOfLifeCell[][] testBoard;
@@ -23,7 +24,7 @@ class PlainGameOfLifeSimulatorTest {
     public void setUp() {
         Locale.setDefault(new Locale("en", "EN"));
         testGameSimulator = new PlainGameOfLifeSimulator();
-        testGameBoard = new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, testGameSimulator);
+        testGameBoard = new GameOfLifeBoard(testNumRows, testNumCols, testGameSimulator);
 
         testBoard = new GameOfLifeCell[testNumRows][testNumCols];
         for (int i = 0; i < testNumRows; i++) {

@@ -14,7 +14,8 @@ class GameOfLifeBoardTest {
     int testNumRows = 11;
     int testNumCols = 11;
     // int testNumberOfMaxIterations = 3;
-    int testNumberOfLiveCells = 15;
+//    int testNumberOfLiveCells = 15;
+    String testName = "gameBoard";
     GameOfLifeSimulator testGameSimulator;
     GameOfLifeBoard testGame;
     GameOfLifeCell[][] testBoard;
@@ -25,7 +26,7 @@ class GameOfLifeBoardTest {
     public void setUp() {
         Locale.setDefault(new Locale("en", "EN"));
         testGameSimulator = new PlainGameOfLifeSimulator();
-        testGame = new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, testGameSimulator);
+        testGame = new GameOfLifeBoard(testNumRows, testNumCols, testGameSimulator);
 
         testBoard = new GameOfLifeCell[testNumRows][testNumCols];
         testListCellsNeighbours = Arrays.asList(new GameOfLifeCell[8]);
@@ -47,11 +48,11 @@ class GameOfLifeBoardTest {
     @Test
     public void testInitialSetup() {
 
-        GameOfLifeBoard testGame2 = new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, testGameSimulator);
+        GameOfLifeBoard testGame2 = new GameOfLifeBoard(testNumRows, testNumCols, testGameSimulator);
 
         //deepEquals
         boolean areBoardsDifferent = Objects.deepEquals(testGame, testGame2);
-        assertFalse(areBoardsDifferent);
+        assertTrue(areBoardsDifferent);
     }
 
     @Test
@@ -125,28 +126,28 @@ class GameOfLifeBoardTest {
     public void testConstructorInvalidInputs() {
 
         Exception exception = assertThrows(TooSmallFieldValueException.class, () -> {
-            new GameOfLifeBoard(0, testNumCols, testNumberOfLiveCells, testGameSimulator);
+            new GameOfLifeBoard(0, testNumCols, testGameSimulator);
         });
         assertEquals("Number must be greater than 0.", exception.getMessage());
 
         Exception exception2 = assertThrows(TooSmallFieldValueException.class, () -> {
-            new GameOfLifeBoard(testNumRows, 0, testNumberOfLiveCells, testGameSimulator);
+            new GameOfLifeBoard(testNumRows, 0, testGameSimulator);
         });
         assertEquals("Number must be greater than 0.", exception2.getMessage());
 
-        Exception exception3 = assertThrows(TooSmallFieldValueException.class, () -> {
-            new GameOfLifeBoard(testNumRows, testNumCols, 0, testGameSimulator);
-        });
-        assertEquals("Number of life cells must be greater than 0.", exception3.getMessage());
-
-        int testTooMuchLiveCells = testNumRows * testNumCols + 1;
-        Exception exception4 = assertThrows(BadFieldValueException.class, () -> {
-            new GameOfLifeBoard(testNumRows, testNumCols, testTooMuchLiveCells, testGameSimulator);
-        });
-        assertEquals("Number of life cells can't be greater than number of all cells.", exception4.getMessage());
+//        Exception exception3 = assertThrows(TooSmallFieldValueException.class, () -> {
+//            new GameOfLifeBoard(testNumRows, testNumCols, testGameSimulator);
+//        });
+//        assertEquals("Number of life cells must be greater than 0.", exception3.getMessage());
+//
+//        int testTooMuchLiveCells = testNumRows * testNumCols + 1;
+//        Exception exception4 = assertThrows(BadFieldValueException.class, () -> {
+//            new GameOfLifeBoard(testNumRows, testNumCols, testTooMuchLiveCells, testGameSimulator);
+//        });
+//        assertEquals("Number of life cells can't be greater than number of all cells.", exception4.getMessage());
 
         Exception exception5 = assertThrows(BadFieldValueException.class, () -> {
-            new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, null);
+            new GameOfLifeBoard(testNumRows, testNumCols, null);
         });
         assertEquals("Variable cannot be null.", exception5.getMessage());
     }
@@ -186,7 +187,7 @@ class GameOfLifeBoardTest {
     public void testToString() {
         int testRows = 2;
         int testCols = 2;
-        GameOfLifeBoard testBoard1 = new GameOfLifeBoard(testRows, testCols, 1, testGameSimulator);
+        GameOfLifeBoard testBoard1 = new GameOfLifeBoard(testRows, testCols, testGameSimulator);
 
         for (int i = 0; i < testCols; i++) {
             for (int j = 0; j < testRows; j++) {
@@ -203,8 +204,8 @@ class GameOfLifeBoardTest {
 
         int testRows = 3;
         int testCols = 3;
-        GameOfLifeBoard testBoard1 = new GameOfLifeBoard(testRows, testCols, 1, testGameSimulator);
-        GameOfLifeBoard testBoard2 = new GameOfLifeBoard(testCols, testCols, 1, testGameSimulator);
+        GameOfLifeBoard testBoard1 = new GameOfLifeBoard(testRows, testCols, testGameSimulator);
+        GameOfLifeBoard testBoard2 = new GameOfLifeBoard(testCols, testCols, testGameSimulator);
 
         assertFalse(testBoard1.equals(null));
         assertFalse(testBoard1.equals(new GameOfLifeCell()));

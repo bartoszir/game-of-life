@@ -14,7 +14,6 @@ import org.example.exceptions.TooSmallFieldValueException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class GameOfLifeBoard implements Serializable, Cloneable {
     private static final Logger logger = LogManager.getLogger(GameOfLifeBoard.class);
@@ -22,11 +21,10 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
     private GameOfLifeSimulator gameSimulator;
     private int numRows; //later it should be up to the user how many Rows and Columns there will be
     private int numCols;
-    private int numberOfLiveCells = 15;
+    //private int numberOfLiveCells = 15;
 
 
-    public GameOfLifeBoard(int numRows, int numCols, int numberOfLifeCells,
-                           GameOfLifeSimulator gameSimulator) {
+    public GameOfLifeBoard(int numRows, int numCols, GameOfLifeSimulator gameSimulator) {
 
         if (numRows < 1) {
             //throw new IllegalArgumentException("Number of rows must be greater than 0");
@@ -46,21 +44,6 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
         }
         this.numCols = numCols;
 
-        if (numberOfLifeCells < 1) {
-            //throw new IllegalArgumentException("Number of life cells must be greater than 0");
-            var exception = new TooSmallFieldValueException("cells.negative-value",
-                    new IllegalArgumentException());
-            exception.log(logger);
-            throw exception;
-        } else if (numberOfLifeCells > (numRows * numCols)) {
-            //throw new IllegalArgumentException("Number of life cells can't be greater than number of all cells");
-            var exception = new BadFieldValueException("cells.illegal-value",
-                    new IllegalArgumentException());
-            exception.log(logger);
-            throw exception;
-        }
-        this.numberOfLiveCells = numberOfLifeCells;
-
         if (gameSimulator == null) {
             //throw new IllegalArgumentException("GameOfLifeSimulator cannot be null");
             var exception = new BadFieldValueException("class.null-reference",
@@ -76,8 +59,8 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
                 board[r][c] = new GameOfLifeCell();
             }
         }
+
         setCellsNeighbours();
-        setStartingBoard();
     }
 
 
@@ -119,28 +102,10 @@ public class GameOfLifeBoard implements Serializable, Cloneable {
         return numCols;
     }
 
-
     public void setGameBoard(GameOfLifeCell[][] newBoard) {
         for (int r = 0; r < numRows; r++) {
             for (int c = 0; c < numCols; c++) {
                 this.board[r][c] = newBoard[r][c];
-            }
-        }
-    }
-
-
-    private void setStartingBoard() {
-        Random random = new Random();
-        int liveCellsLeftCount = numberOfLiveCells;
-
-        //random placement of live cells
-        while (liveCellsLeftCount > 0) {
-            int r = random.nextInt(numRows); //0-7
-            int c = random.nextInt(numCols);
-
-            if (!get(r, c)) {
-                getCell(r, c).updateState(true);
-                liveCellsLeftCount--;
             }
         }
     }

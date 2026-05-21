@@ -8,9 +8,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,10 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FileGameOfLifeBoardDaoTest {
     int testNumRows = 11;
     int testNumCols = 11;
-    int testNumberOfLiveCells = 15;
+    //    int testNumberOfLiveCells = 15;
+    //String testName = "gameBoard";
     private final GameOfLifeSimulator gameOfLifeSimulator = new PlainGameOfLifeSimulator();
     private GameOfLifeBoardDaoFactory factory = new GameOfLifeBoardDaoFactory();
-    private GameOfLifeBoard gameOfLifeBoard = new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, gameOfLifeSimulator);
+    private GameOfLifeBoard gameOfLifeBoard = new GameOfLifeBoard(testNumRows, testNumCols, gameOfLifeSimulator);
 
     private Dao<GameOfLifeBoard> fileGameOfLifeDao;
     private GameOfLifeBoard gameOfLifeBoardSecond;
@@ -80,7 +78,7 @@ public class FileGameOfLifeBoardDaoTest {
         File file = new File(testFileName);
         file.delete();
     }
-    
+
     @Test
     public void readExceptionTest() {
         Exception exception = assertThrows(FileOperationException.class, () -> {

@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.exceptions.FileOperationException;
-import org.example.exceptions.GameOfLifeCellNullException;
 import org.example.exceptions.GameOfLifeDaoException;
 
 import java.io.*;

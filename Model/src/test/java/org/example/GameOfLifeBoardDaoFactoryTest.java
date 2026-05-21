@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.exceptions.DatabaseConnectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,5 +20,14 @@ public class GameOfLifeBoardDaoFactoryTest {
     @Test
     public void getFileDaoTest() {
         assertNotNull(factory.getFileDao("abc"));
+    }
+
+    @Test
+    public void getJdbcDaoTest() {
+        try {
+            factory.getJdbcDao("board");
+        } catch (DatabaseConnectionException e) {
+            assertEquals("Error reading from the database.", e.getMessage());
+        }
     }
 }

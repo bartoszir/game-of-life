@@ -1,5 +1,8 @@
 # game-of-life
+
 Java implementation of Conway's Game of Life with JavaFX GUI, developed for the Component Programming (Programowanie komponentowe) course.
+
+![Game of Life simulation](assets/game-of-life-GUI-screenshot.png)
 
 ## Requirements
 
@@ -8,82 +11,51 @@ Java implementation of Conway's Game of Life with JavaFX GUI, developed for the 
 
 ## Project Structure
 
-```
 game-of-life/
 ├── Model/                          # Game logic module
 │   ├── src/main/java/org/example/
-│   │   ├── GameOfLifeBoard.java    # Board with simulation logic
-│   │   ├── GameOfLifeCell.java     # Single cell (state, neighbours, rules)
-│   │   ├── GameOfLifeLine.java     # Abstract row/column with live/dead counts
-│   │   ├── GameOfLifeRow.java      # Row of cells
-│   │   ├── GameOfLifeColumn.java   # Column of cells
-│   │   ├── GameOfLifeSimulator.java# Simulator interface
-│   │   ├── PlainGameOfLifeSimulator.java # Default simulator implementation
-│   │   ├── Dao.java                # DAO interface for board persistence
-│   │   ├── FileGameOfLifeBoardDao.java   # File-based DAO implementation
-│   │   ├── GameOfLifeBoardDaoFactory.java# DAO factory
-│   │   └── Main.java               # Console entry point
-│   └── src/test/java/org/example/  # Unit tests for Model
+│   │   ├── GameOfLifeBoard.java              # Board data model
+│   │   ├── GameOfLifeCell.java               # Single cell (state, neighbours, rules)
+│   │   ├── GameOfLifeLine.java               # Abstract base for row/column
+│   │   ├── GameOfLifeRow.java                # Row of cells
+│   │   ├── GameOfLifeColumn.java             # Column of cells
+│   │   ├── GameOfLifeSimulator.java          # Simulator interface
+│   │   ├── PlainGameOfLifeSimulator.java     # Default simulator implementation
+│   │   ├── Dao.java                          # Generic DAO interface
+│   │   ├── FileGameOfLifeBoardDao.java       # File-based DAO implementation
+│   │   └── GameOfLifeBoardDaoFactory.java    # DAO factory
+│   └── src/test/java/org/example/           # Unit tests
 ├── View/                           # JavaFX GUI module
 │   ├── src/main/java/org/example/view/
-│   │   ├── HelloApplication.java   # JavaFX application entry point
-│   │   ├── ConfigurationController.java # Configuration screen controller
-│   │   ├── SimulationController.java    # Simulation screen controller
-│   │   ├── LevelSize.java          # Enum: board size presets
-│   │   └── LevelDensity.java       # Enum: live cell density presets
+│   │   ├── HelloApplication.java            # JavaFX entry point
+│   │   ├── ConfigurationController.java     # Configuration screen controller
+│   │   ├── SimulationController.java        # Simulation screen controller
+│   │   ├── LevelSize.java                   # Enum: board size presets
+│   │   └── LevelDensity.java               # Enum: cell density presets
 │   └── src/main/resources/org/example/view/
-│       ├── configurationScene.fxml # Configuration screen layout
-│       └── simulationScene.fxml    # Simulation screen layout
-├── checkstyle2023.xml              # Checkstyle ruleset
+│       ├── configurationScene.fxml          # Configuration screen layout
+│       └── simulationScene.fxml             # Simulation screen layout
 └── pom.xml                         # Root multi-module Maven build
-```
 
-## Running the Application
-
-### JavaFX GUI
+## Running
 
 ```bash
+# JavaFX GUI
 mvn javafx:run -pl View
-```
 
-### Console (Model only)
-
-```bash
+# Console (Model only)
 mvn compile exec:java -pl Model
 ```
 
-## Running Tests
+## Testing & Verification
 
 ```bash
+# Run tests
 mvn test
-```
 
-Or for a single module:
-
-```bash
-mvn test -pl Model
-```
-
-## Full Verification (tests + checkstyle + coverage report)
-
-```bash
+# Full verification (tests + checkstyle + coverage)
 mvn verify
-```
 
-## HTML Reports
-
-Run the following command to generate all HTML reports:
-
-```bash
+# Generate HTML reports (coverage, checkstyle) — output: Model/target/site/
 mvn site -pl Model
 ```
-
-Reports are generated under `Model/target/site/`:
-
-| Report | Path | Description |
-|---|---|---|
-| JaCoCo (code coverage) | `Model/target/site/jacoco/index.html` | Line/branch coverage per class |
-| Checkstyle | `Model/target/site/checkstyle.html` | Code style violations |
-| Project Info | `Model/target/site/index.html` | General project info (dependencies, plugins) |
-
-> **Note:** `mvn verify` generates only the JaCoCo data file. To produce the full HTML reports, run `mvn site` (or `mvn verify site`).

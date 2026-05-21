@@ -11,13 +11,14 @@ public class GameOfLifeBoardPrototypeFactoryTest {
     private GameOfLifeBoardPrototypeFactory factory;
     private GameOfLifeSimulator simulator;
     private GameOfLifeBoard prototype;
+    String testName = "gameBoard";
 
     @BeforeEach
     public void setUp() {
         Locale.setDefault(new Locale("en", "EN"));
         factory = new GameOfLifeBoardPrototypeFactory();
         simulator = new PlainGameOfLifeSimulator();
-        prototype = new GameOfLifeBoard(5, 5, 5, simulator);
+        prototype = new GameOfLifeBoard(5, 5, simulator);
     }
 
     @Test

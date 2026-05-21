@@ -1,175 +1,135 @@
 package org.example;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 class GameOfLifeBoardTest {
+    int testNumRows = 11;
+    int testNumCols = 11;
+    // int testNumberOfMaxIterations = 3;
+    int testNumberOfLiveCells = 15;
+    GameOfLifeSimulator testGameSimulator;
+    GameOfLifeBoard testGame;
+    boolean[][] testCleanBoard;
+
+    @BeforeEach
+    void setUp() {
+        testGameSimulator = new PlainGameOfLifeSimulator();
+        testGame = new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, testGameSimulator);
+    }
+
+    @Test
+    public void testConstructorValidInputs() {
+
+        assertEquals(testNumRows, testGame.getNumRows());
+        assertEquals(testNumCols, testGame.getNumCols());
+    }
+
+    @Test
+    void testConstructorInvalidInputs() {
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            new GameOfLifeBoard(0, testNumCols, testNumberOfLiveCells, testGameSimulator);
+        });
+        assertEquals("Number of rows must be greater than 0", exception.getMessage());
+
+        Exception exception2 = assertThrows(IllegalArgumentException.class, () -> {
+            new GameOfLifeBoard(testNumRows, 0, testNumberOfLiveCells, testGameSimulator);
+        });
+        assertEquals("Number of columns must be greater than 0", exception2.getMessage());
+
+        Exception exception3 = assertThrows(IllegalArgumentException.class, () -> {
+            new GameOfLifeBoard(testNumRows, testNumCols, 0, testGameSimulator);
+        });
+        assertEquals("Number of life cells must be greater than 0", exception3.getMessage());
+
+        int testTooMuchLiveCells = testNumRows * testNumCols + 1;
+        Exception exception4 = assertThrows(IllegalArgumentException.class, () -> {
+            new GameOfLifeBoard(testNumRows, testNumCols, testTooMuchLiveCells, testGameSimulator);
+        });
+        assertEquals("Number of life cells can't be be greater than number of all cells", exception4.getMessage());
+
+        Exception exception5 = assertThrows(IllegalArgumentException.class, () -> {
+            new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, null);
+        });
+        assertEquals("GameOfLifeSimulator cannot be null", exception5.getMessage());
+    }
 
     @Test
     public void testInitialSetup() {
 
-        GameOfLifeBoard game1 = new GameOfLifeBoard();
-        GameOfLifeBoard game2 = new GameOfLifeBoard();
+        GameOfLifeBoard testGame2 = new GameOfLifeBoard(testNumRows, testNumCols, testNumberOfLiveCells, testGameSimulator);
 
-        boolean areBoardsDifferent = false;
-
-        //this checks if any cell in the two game boards is different
-        for (int r = 0; r < game1.getNumRows(); r++) {
-            for (int c = 0; c < game1.getNumCols(); c++) {
-                if (game1.getCell(r, c).isAlive() != game2.getCell(r, c).isAlive()) {
-                    areBoardsDifferent = true;
-                    break;
-                }
-            }
-        }
-
-        assertTrue(areBoardsDifferent);
+        //deepEquals
+        boolean areBoardsDifferent = Objects.deepEquals(testGame, testGame2);
+        assertFalse(areBoardsDifferent);
     }
 
     @Test
     public void testCountAliveNeighbors() {
 
-        GameOfLifeBoard game = new GameOfLifeBoard();
+        int testNumRows = testGame.getNumRows();
+        int testNumCols = testGame.getNumCols();
 
-        int testNumRows = game.getNumRows();
-        int testNumCols = game.getNumCols();
+        boolean[][] testBoard = new boolean[testNumRows][testNumCols];
 
-        Cell[][] testBoard = new Cell[testNumRows][testNumCols];
-        for (int i = 0; i < testNumRows; i++) {
-            for (int j = 0; j < testNumCols; j++) {
-                testBoard[i][j] = new Cell(i, j);
-            }
-        }
+        testBoard[5][5] = true; //this the cell that we are going to check after doStep()
+        testBoard[4][5] = true;
+        testBoard[4][6] = true;
+        testBoard[5][6] = true;
+        testBoard[6][6] = true;
 
-        testBoard[5][5].setIsAlive(true); //this the cell that we are going to check after doStep()
-        testBoard[4][5].setIsAlive(true);
-        testBoard[4][6].setIsAlive(true);
-        testBoard[5][6].setIsAlive(true);
-        testBoard[6][6].setIsAlive(true);
+        testGame.setGameBoard(testBoard);
 
-        game.setGameBoard(testBoard);
-
-        int count = game.countAliveNeighbours(5, 5);
+        int count = testGame.countAliveNeighbours(5, 5);
 
         assertEquals(4, count, "the cell at [5,5] should have 4 neighbours");
     }
 
-    // !!!!!!
+
     @Test
-    public void testDoStep() {
+    public void testSetter() {
+        int testRowNumber = 5;
+        int testColNumber = 5;
+        boolean testState = true;
 
-        GameOfLifeBoard game = new GameOfLifeBoard();
+        testCleanBoard = new boolean[testNumRows][testNumCols];
+        testGame.setGameBoard(testCleanBoard);
 
-        int testNumRows = game.getNumRows();
-        int testNumCols = game.getNumCols();
-        Cell[][] testBoard = new Cell[testNumRows][testNumCols];
-        for (int i = 0; i < testNumRows; i++) {
-            for (int j = 0; j < testNumCols; j++) {
-                testBoard[i][j] = new Cell(i, j);
-            }
-        }
+        assertFalse(testGame.get(testRowNumber, testColNumber));
 
-        //1st rule: dead cell with 3 alive neighbours comes to life in next iteration
-        testBoard[5][5].setIsAlive(true);
-        testBoard[5][4].setIsAlive(true);
-        testBoard[4][5].setIsAlive(true);
-        game.setGameBoard(testBoard);
+        testGame.set(testRowNumber, testColNumber, testState);
 
-        assertFalse(game.getCell(4,4).isAlive());
-
-        game.doStep();
-
-        assertTrue(game.getCell(4,4).isAlive());
-
-
-        //2nd rule: live cell with 2 or 3 alive neighbours stays alive
-        game.doStep();
-        assertTrue(game.getCell(4,4).isAlive());
-
-        testBoard[5][5].setIsAlive(false);
-        game.doStep();
-        assertTrue(game.getCell(4,4).isAlive());
-
-
-        //reset of testBoard
-        for (int i = 0; i < testNumRows; i++) {
-            for (int j = 0; j < testNumCols; j++) {
-                if (!testBoard[i][j].isAlive()) {
-                    continue;
-                }
-                testBoard[i][j].setIsAlive(false);
-            }
-        }
-
-
-        //3rd rule: live cell with 1 alive neighbour dies
-        testBoard[5][5].setIsAlive(true);
-        testBoard[4][5].setIsAlive(true);
-
-        game.setGameBoard(testBoard);
-        game.doStep();
-
-        assertFalse(game.getCell(4,5).isAlive());
-        assertFalse(game.getCell(5,5).isAlive());
-
-
-        //4th rule: live cell with more than 3 alive neighbours dies
-        testBoard[5][5].setIsAlive(true); //this the cell that we are going to check after doStep()
-        testBoard[4][5].setIsAlive(true);
-        testBoard[4][6].setIsAlive(true);
-        testBoard[5][6].setIsAlive(true);
-        testBoard[6][6].setIsAlive(true);
-
-        game.setGameBoard(testBoard);
-        game.doStep();
-
-        assertFalse(game.getCell(5,5).isAlive());
-
-        //reset of testBoard
-        for (int i = 0; i < testNumRows; i++) {
-            for (int j = 0; j < testNumCols; j++) {
-                if (!testBoard[i][j].isAlive()) {
-                    continue;
-                }
-                testBoard[i][j].setIsAlive(false);
-            }
-        }
-
-        //----------------
-        //checking how the algorithm behaves when the cell is on the banks
-        testBoard[3][0].setIsAlive(true); //this cell has neighbours on the other side of the board
-        testBoard[3][testNumCols-1].setIsAlive(true);
-        testBoard[4][testNumCols-1].setIsAlive(true);
-
-        game.setGameBoard(testBoard);
-        game.doStep();
-
-        assertTrue(game.getCell(3,0).isAlive());
-
-        //now we will see how the algorithm behaves when the only cell that lives on our board will be the cell [3;0]
-        testBoard[3][testNumCols-1].setIsAlive(false);
-        testBoard[4][testNumCols-1].setIsAlive(false);
-
-        game.setGameBoard(testBoard);
-        game.doStep();
-
-        assertFalse(game.getCell(3,0).isAlive());
-
-        //checking how the algorithm behaves when the cell is in the corner
-        testBoard[testNumRows-1][testNumCols-1].setIsAlive(true); //cell is located in the bottom's right corner
-        testBoard[testNumRows-2][testNumCols-2].setIsAlive(true); //our cells' left top corner neighbour
-        testBoard[0][testNumCols-2].setIsAlive(true); //our cells' left bottom corner neighbour
-
-        game.setGameBoard(testBoard);
-        game.doStep();
-
-        assertTrue(game.getCell(testNumRows-1, testNumCols-1).isAlive());
-
+        assertTrue(testGame.get(testRowNumber, testColNumber));
     }
 
     @Test
-    public void testSimulateLife() {
+    public void testSetterInvalidInputs() {
+        //incorrect inputs for row
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            testGame.set(-1, testNumCols - 1, true);
+        });
+        assertEquals("Number of row is out of array.", exception.getMessage());
 
+        Exception exception1 = assertThrows(IllegalArgumentException.class, () -> {
+            testGame.set(testNumRows * testNumCols, testNumCols - 1, true);
+        });
+        assertEquals("Number of row is out of array.", exception1.getMessage());
+
+
+        //incorrect inputs for column
+        Exception exception2 = assertThrows(IllegalArgumentException.class, () -> {
+            testGame.set(testNumRows - 1, -1, true);
+        });
+        assertEquals("Number of column is out of array.", exception2.getMessage());
+
+        Exception exception3 = assertThrows(IllegalArgumentException.class, () -> {
+            testGame.set(testNumRows - 1, testNumRows * testNumCols, true);
+        });
+        assertEquals("Number of column is out of array.", exception3.getMessage());
     }
 }

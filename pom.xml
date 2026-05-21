@@ -4,10 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
-    <artifactId>KOMP</artifactId>
+    <groupId>gol</groupId>
+    <artifactId>GameOfLifeProject</artifactId>
     <version>1.0-SNAPSHOT</version>
-	
+
+	<description>Projekt grupy laboratoryjnej JM_CZ_1530_02</description>
+
+	<developers>
+		<developer>
+			<id>ibartoszek</id>
+			<name>Ireneusz Bartoszek</name>
+			<email>251481@edu.p.lodz.pl</email>
+		</developer>
+
+		<developer>
+			<id>jgajewski</id>
+			<name>Jakub Gajewski</name>
+			<email>229823@edu.p.lodz.pl</email>
+		</developer>
+	</developers>
+
+
 	<build>
 		<plugins>
 			<plugin>
@@ -58,7 +75,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.13.0</version>
 				<configuration>
-					<release>21</release>
+					<release>23</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -76,7 +93,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>3.3.0</version>
 				<configuration>
-					<mainClass>org.example.GameOfLifeBoard</mainClass>
+					<mainClass>org.example.Main</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -119,6 +136,17 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>3.3.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.25.0</version>
+			</plugin>
+
 		</plugins>
 	</reporting>
 	
@@ -129,12 +157,34 @@
 			<version>5.10.3</version>
 			<scope>test</scope>
 		</dependency>
+			<dependency>
+				<groupId>net.sourceforge.pmd</groupId>
+				<artifactId>pmd-core</artifactId>
+				<version>7.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.pmd</groupId>
+				<artifactId>pmd-java</artifactId>
+				<version>7.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.pmd</groupId>
+				<artifactId>pmd-javascript</artifactId>
+				<version>7.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>net.sourceforge.pmd</groupId>
+				<artifactId>pmd-jsp</artifactId>
+				<version>7.5.0</version>
+			</dependency>
 	</dependencies>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>23</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+
 
 
 </project>

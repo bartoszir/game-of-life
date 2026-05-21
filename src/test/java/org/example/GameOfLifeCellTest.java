@@ -10,11 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GameOfLifeCellTest {
     private GameOfLifeCell cell;
+    private GameOfLifeCell cellSecond;
     private GameOfLifeCell[] testNeighbours;
 
     @BeforeEach
     public void setUp() {
         cell = new GameOfLifeCell();
+        cellSecond = new GameOfLifeCell();
         testNeighbours = new GameOfLifeCell[8];
         for (int i = 0; i < testNeighbours.length; i++) {
             testNeighbours[i] = new GameOfLifeCell();
@@ -139,5 +141,53 @@ class GameOfLifeCellTest {
         cell.updateState(true);  // Listener should not be triggered after removal
     }
 
+    @Test
+    public void toStringTest() {
+        for (int i = 0; i < testNeighbours.length; i++) {
+            cell.setNeighbour(i, testNeighbours[i]);
+            cellSecond.setNeighbour(i, testNeighbours[i]);
+        }
+        testNeighbours[0].updateState(true);
+
+        cell.setNeighbour(3, testNeighbours[0]);
+        cellSecond.setNeighbour(3, testNeighbours[0]);
+        assertEquals(cell.toString(), cellSecond.toString());
+
+        testNeighbours[5].updateState(true);
+        cellSecond.setNeighbour(4, testNeighbours[5]);
+        assertNotEquals(cell.toString(), cellSecond.toString());
+    }
+
+    @Test
+    public void equalsTest() {
+        assertTrue(cell.equals(cell));
+        assertFalse(cell.equals(null));
+        assertFalse(cell.equals(testNeighbours));
+        for (int i = 0; i < testNeighbours.length; i++) {
+            cell.setNeighbour(i, testNeighbours[i]);
+            cellSecond.setNeighbour(i, testNeighbours[i]);
+        }
+
+        cell.setNeighbour(3, testNeighbours[0]);
+        cellSecond.setNeighbour(3, testNeighbours[0]);
+        assertTrue(cell.equals(cellSecond));
+        assertTrue(cellSecond.equals(cell));
+
+        testNeighbours[1].updateState(true);
+        cellSecond.setNeighbour(2, testNeighbours[1]);
+        assertFalse(cell.equals(cellSecond));
+    }
+
+    @Test
+    public void hashCodeTest() {
+        for (int i = 0; i < testNeighbours.length; i++) {
+            cell.setNeighbour(i, testNeighbours[i]);
+            cellSecond.setNeighbour(i, testNeighbours[i]);
+        }
+
+        cell.setNeighbour(3, testNeighbours[0]);
+        cellSecond.setNeighbour(3, testNeighbours[0]);
+        assertEquals(cell.hashCode(), cellSecond.hashCode());
+    }
 
 }

@@ -1,13 +1,17 @@
 package org.example;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GameOfLifeLine implements PropertyChangeListener {
-    // protected GameOfLifeCell[] cellsArray;
-    protected List<GameOfLifeCell> cellsList = Arrays.asList(new GameOfLifeCell[8]);
+    protected List<GameOfLifeCell> cellsList;
     public int liveCount;
     public int deadCount;
 
@@ -88,5 +92,55 @@ public abstract class GameOfLifeLine implements PropertyChangeListener {
                 this.deadCount--;
             }
         }
+    }
+
+    // --------------------------------------------------------------------------------------------------------------
+    // metody z cwiczenia 6
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.NO_CLASS_NAME_STYLE)
+                .append("cellsList", getCellsValues())
+                .append("liveCount", liveCount)
+                .append("deadCount", deadCount)
+                .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        GameOfLifeLine other = (GameOfLifeLine) obj;
+        return new EqualsBuilder()
+                //.appendSuper(super.equals(obj))
+                .append(getCellsValues(), other.getCellsValues())
+                .append(liveCount, other.liveCount)
+                .append(deadCount, other.deadCount)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(19, 37)
+                .append(getCellsValues())
+                .append(liveCount)
+                .append(deadCount)
+                .toHashCode();
+    }
+
+
+    // return ArrayList of cells value (boolean), used by methods: toString, equals, hashCode
+
+    private ArrayList<Boolean> getCellsValues() {
+        ArrayList<Boolean> gameOfLifeArray = new ArrayList<>(8);
+        for (GameOfLifeCell gameOfLifeCell : cellsList) {
+            gameOfLifeArray.add(gameOfLifeCell.getCellValue());
+        }
+        return gameOfLifeArray;
     }
 }

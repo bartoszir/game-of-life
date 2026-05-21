@@ -16,6 +16,9 @@ class GameOfLifeLineTest {
     private List<GameOfLifeCell> cellsList;
     private GameOfLifeLine gameOfLifeLine;
 
+    List<GameOfLifeCell> cellsListSecond;
+    GameOfLifeLine gameOfLifeLineSecond;
+
     // Concrete subclass to instantiate abstract class for testing
     private static class GameOfLifeLineImpl extends GameOfLifeLine {
         public GameOfLifeLineImpl(List<GameOfLifeCell> cellsList) {
@@ -33,6 +36,9 @@ class GameOfLifeLineTest {
 
         cellsList = new ArrayList<>(Arrays.asList(liveCell, deadCell, liveCell, deadCell, deadCell));
         gameOfLifeLine = new GameOfLifeLineImpl(cellsList);
+
+        cellsListSecond = new ArrayList<>(Arrays.asList(liveCell, deadCell, liveCell, deadCell, deadCell));
+        gameOfLifeLineSecond = new GameOfLifeLineImpl(cellsListSecond);
     }
 
     @Test
@@ -230,5 +236,28 @@ class GameOfLifeLineTest {
         assertEquals(2, gameOfLifeLine.countAliveCells(), "The alive cell count should stay at 2");
         assertEquals(3, gameOfLifeLine.countDeadCells(), "The dead cell count should stay at 3");
 
+    }
+
+    @Test
+    public void toStringTest() {
+        assertEquals(gameOfLifeLine.toString(), gameOfLifeLineSecond.toString());
+    }
+
+    @Test
+    public void equalsTest() {
+        assertTrue(gameOfLifeLine.equals(gameOfLifeLine));
+        assertFalse(gameOfLifeLine.equals(null));
+        assertFalse(gameOfLifeLine.equals(liveCell));
+
+        GameOfLifeCell newLiveCell = new GameOfLifeCell();
+        newLiveCell.updateState(true);
+        gameOfLifeLineSecond.setCell(1, newLiveCell);
+
+        assertFalse(gameOfLifeLine.equals(gameOfLifeLineSecond));
+    }
+
+    @Test
+    public void hashCodeTest() {
+        assertEquals(gameOfLifeLine.hashCode(), gameOfLifeLineSecond.hashCode());
     }
 }

@@ -60,3 +60,7 @@ mvn verify
 # Generate HTML reports (coverage, checkstyle) — output: Model/target/site/
 mvn site -pl Model
 ```
+## Authors
+
+Ireneusz Bartoszek  
+Jakub Gajewski  

@@ -1,4 +1,4 @@
-# game-of-life
+# Game of Life
 
 Java implementation of Conway's Game of Life with JavaFX GUI, developed for the Component Programming (Programowanie komponentowe) course.
 
@@ -10,7 +10,7 @@ Java implementation of Conway's Game of Life with JavaFX GUI, developed for the 
 - Maven 3.6+
 
 ## Project Structure
-
+```
 game-of-life/
 ├── Model/                          # Game logic module
 │   ├── src/main/java/org/example/
@@ -36,6 +36,7 @@ game-of-life/
 │       ├── configurationScene.fxml          # Configuration screen layout
 │       └── simulationScene.fxml             # Simulation screen layout
 └── pom.xml                         # Root multi-module Maven build
+```
 
 ## Running
 
